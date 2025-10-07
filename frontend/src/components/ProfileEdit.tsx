@@ -29,7 +29,7 @@ export default function ProfileEdit({ disabled = false }: ProfileEditProps) {
       )}
       onClick={handleProfileEdit}
       disabled={disabled}
-      text="Customize"
+      content="Customize"
     ></Button>
   );
 }

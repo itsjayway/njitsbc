@@ -2,14 +2,14 @@ import React from "react";
 import classes from "../utils/classes";
 
 interface ButtonProps {
-  text: string;
+  content: string;
   className?: string;
   disabled?: boolean;
   onClick: () => void;
 }
 
 export default function Button({
-  text,
+  content,
   className,
   disabled,
   onClick,
@@ -17,10 +17,13 @@ export default function Button({
   return (
     <button
       onClick={onClick}
-      className={classes(className, "font-semibold px-3 py-1 rounded-xl transition")}
+      className={classes(
+        className,
+        "font-semibold text-2xl rounded-xl transition px-5 py-3 leading-tight"
+      )}
       disabled={disabled}
     >
-      {text}
+      {content}
     </button>
   );
 }

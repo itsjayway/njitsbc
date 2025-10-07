@@ -17,7 +17,6 @@ ACCOUNT_KEY = os.getenv("AZURE_STORAGE_ACCOUNT_KEY")
 TABLE_NAME = os.getenv("AZURE_STORAGE_TABLE_NAME")
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("Saving video metadata.")
     try:
         credential = AzureNamedKeyCredential(ACCOUNT_NAME, ACCOUNT_KEY)
     
@@ -53,6 +52,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             "description": description or "",
             "uploadedBy": user,
             "blobUrl": blob_url,
+            "approved": None,
         }
 
         table_client.create_entity(entity=entity)
