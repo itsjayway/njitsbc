@@ -1,8 +1,17 @@
 import React from "react";
 import VideoPlayer from "./components/VideoPlayer";
 import Navbar from "./components/Navbar";
+import {
+  // AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+  useMsal,
+} from "@azure/msal-react";
+import VideoUpload from "./components/VideoUpload";
+import ClipGallery from "./components/ClipGallery";
 
 export default function Landing() {
+  const { accounts } = useMsal();
+  const isAuthenticated = accounts.length > 0;
   return (
     <div className="min-h-screen flex flex-col bg-njit-navy-dark text-white">
       <Navbar />
@@ -31,12 +40,14 @@ export default function Landing() {
             >
               Join on CampusLabs
             </a>
-            <a
-              href="#register"
-              className="bg-njit-red-dark text-gray-200 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-njit-red transition"
-            >
-              Register to post
-            </a>
+            <UnauthenticatedTemplate>
+              <a
+                href="#register"
+                className="bg-njit-red-dark text-gray-200 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-njit-red transition"
+              >
+                Register to post
+              </a>
+            </UnauthenticatedTemplate>
           </div>
         </div>
       </header>
@@ -45,21 +56,14 @@ export default function Landing() {
         className="flex flex-col md:flex-row justify-around items-center text-center py-12 bg-njit-navy"
         id="features"
       >
-        <div className="max-w-sm p-4">
+        <div className="max-w-sm p-4 w-[50%]">
           <h3 className="text-2xl mb-2">Upload Clips</h3>
-          <p className="text-gray-300">
-            Share your best skate moments with the community.
-          </p>
+          <p className="text-gray-300">Whatchu got⁉️</p>
+          {isAuthenticated && <VideoUpload />}
         </div>
-        <div>
+        <div className="p-4 w-[50%]">
           <h3>Latest Clips</h3>
-          <VideoPlayer
-            source="https://njitsbcstagedvideos.blob.core.windows.net/clips/juan.mp4"
-            orientation="vertical"
-            width={240}
-            height={426}
-            className="my-4"
-          />
+          <ClipGallery />
         </div>
       </div>
 
