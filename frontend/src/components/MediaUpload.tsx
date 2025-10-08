@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useMsal } from "@azure/msal-react";
 import expandUpIcon from "../assets/icons/expand-up.svg";
 import classes from "../utils/classes";
+import { useUser } from "../hooks/useUser";
 
 const Locations = {
   CKB: "CKB",
@@ -18,8 +18,7 @@ const Locations = {
 } as const;
 
 export default function MediaUpload() {
-  const { instance } = useMsal();
-  const username = instance.getActiveAccount()?.name || "User";
+  const { isAuthenticated, isAdmin, isMember, user } = useUser();
   const [file, setFile] = useState<File | null>(null);
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
@@ -36,6 +35,12 @@ export default function MediaUpload() {
       alert("Please enter a file name.");
       return;
     }
+
+    if (!isAuthenticated || (!isAdmin && !isMember)) {
+      alert("You must be a member or admin to upload files.");
+      return;
+    }
+
     try {
       const sasResponse = await fetch(
         `http://localhost:7071/api/getSasToken?fileName=${encodeURIComponent(
@@ -63,8 +68,7 @@ export default function MediaUpload() {
             location,
             description,
             blobUrl,
-            user: username,
-            approved: null,
+            user: user.displayName,
           }),
         });
         alert("Upload successful!");

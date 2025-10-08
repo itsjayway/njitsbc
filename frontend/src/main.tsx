@@ -5,6 +5,7 @@ import { MsalProvider } from "@azure/msal-react";
 import { msalConfig } from "./authConfig";
 import App from "./App";
 import "./index.css";
+import { UserProvider } from "./contexts/roleContext";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 await msalInstance.initialize();
@@ -31,7 +32,9 @@ msalInstance.addEventCallback((event) => {
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <MsalProvider instance={msalInstance}>
-      <App />
+      <UserProvider>
+        <App />
+      </UserProvider>
     </MsalProvider>
   </React.StrictMode>
 );

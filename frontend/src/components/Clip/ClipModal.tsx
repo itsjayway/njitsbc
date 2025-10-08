@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import type Clip from "../../interfaces/ClipInterface";
 import validateFileExt from "../../utils/validateFileExt";
 import Button from "../Button";
+import classes from "../../utils/classes";
+import { useMsal } from "@azure/msal-react";
 
 interface ClipModalProps {
   clip: Clip;
@@ -19,9 +21,27 @@ export default function ClipModal({
   hasPrev,
   hasNext,
 }: ClipModalProps) {
+  const { instance } = useMsal();
+  const username = instance.getActiveAccount()?.name;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      } else if (e.key === "ArrowLeft" && hasPrev) {
+        onPrev();
+      } else if (e.key === "ArrowRight" && hasNext) {
+        onNext();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleClose, onPrev, onNext, hasPrev, hasNext]);
+
   if (!clip) return null;
   const clipIsVideo = validateFileExt(clip.fileName, ["mp4", "mov", "webm"]);
   const clipIsImage = validateFileExt(clip.fileName, ["jpg", "jpeg", "png"]);
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
@@ -51,19 +71,26 @@ export default function ClipModal({
             className="w-full rounded object-contain max-h-[75vh]"
           />
         )}
-        <div className="text-white mt-2">
-          <p>
-            <strong>Description:</strong> {clip.description}
-          </p>
-          <p>
-            <strong>Location:</strong> {clip.location}
-          </p>
-          <p>
-            <strong>Date:</strong> {clip.date}
-          </p>
-          <p>
-            <strong>Uploaded by:</strong> {clip.uploadedBy}
-          </p>
+        <div className="flex w-full justify-center items-start py-4">
+          <div className="flex flex-col text-white text-left w-[100%]">
+            <div className="text-left text-4xl">
+              <span
+                className={classes(
+                  "font-brick",
+                  clip.uploadedBy === username ? "text-red-200" : ""
+                )}
+              >
+                {clip.uploadedBy && `@${clip.uploadedBy}`}
+              </span>
+              <span>{clip.date && ` // ${clip.date}`}</span>
+            </div>
+            <p>
+              <strong>Description:</strong> {clip.description}
+            </p>
+            <p>
+              <strong>Location:</strong> {clip.location}
+            </p>
+          </div>
         </div>
         <div className="flex justify-between mb-2">
           <Button

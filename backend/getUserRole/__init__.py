@@ -24,7 +24,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             table_name=USERS_TABLE,
             credential=credential
         )
-        
+        print(email)
         users = table_client.query_entities(
             query_filter=f"email eq '{email}'"
         )
@@ -35,12 +35,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             break
         
         if user:
-            role = user.get('role', 'viewer')
+            role = user.get('role', None)
         else:
             role = 'viewer'
         
+        display_name = user.get('displayName', None)
+        email = user.get('email', None)
+        if not all([role, display_name, email]):
+            return func.HttpResponse("User data incomplete", status_code=500)
+        content = {"display_name": display_name, "role": role, "email": email}
+        print(content)
         return func.HttpResponse(
-            json.dumps({"role": role}),
+            json.dumps(content),
             mimetype="application/json",
             status_code=200
         )

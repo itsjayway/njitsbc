@@ -42,6 +42,14 @@ export default function ClipGallery() {
   const endIdx = startIdx + clipsPerPage;
   const currPageClips = clips.slice(startIdx, endIdx);
   const totalPages = Math.ceil(clips.length / clipsPerPage);
+
+  const decrementPage = () => {
+    setPage((p) => Math.max(p - 1, 0));
+  };
+
+  const incrementPage = () => {
+    setPage((p) => Math.min(p + 1, totalPages - 1));
+  };
   return (
     <div className="">
       {selectedClip && (
@@ -52,22 +60,45 @@ export default function ClipGallery() {
             const idx = currPageClips.findIndex(
               (c) => c.RowKey === selectedClip?.RowKey
             );
-            if (idx > 0) setSelectedClip(currPageClips[idx - 1]);
+            if (idx > 0) {
+              setSelectedClip(currPageClips[idx - 1]);
+            } else if (page > 0) {
+              decrementPage();
+              setTimeout(() => {
+                const prevPageClips = clips.slice(
+                  (page - 1) * clipsPerPage,
+                  page * clipsPerPage
+                );
+                setSelectedClip(prevPageClips[prevPageClips.length - 1]);
+              }, 0);
+            }
           }}
           onNext={() => {
             const idx = currPageClips.findIndex(
               (c) => c.RowKey === selectedClip?.RowKey
             );
-            if (idx < currPageClips.length - 1)
+            if (idx < currPageClips.length - 1) {
               setSelectedClip(currPageClips[idx + 1]);
+            } else if (page < totalPages - 1) {
+              incrementPage();
+              setTimeout(() => {
+                const nextPageClips = clips.slice(
+                  (page + 1) * clipsPerPage,
+                  (page + 2) * clipsPerPage
+                );
+                setSelectedClip(nextPageClips[0]);
+              }, 0);
+            }
           }}
           hasPrev={
+            page > 0 ||
             currPageClips.findIndex((c) => c.RowKey === selectedClip?.RowKey) >
-            0
+              0
           }
           hasNext={
+            page < totalPages - 1 ||
             currPageClips.findIndex((c) => c.RowKey === selectedClip?.RowKey) <
-            currPageClips.length - 1
+              currPageClips.length - 1
           }
         />
       )}

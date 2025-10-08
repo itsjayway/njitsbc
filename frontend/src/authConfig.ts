@@ -17,7 +17,7 @@ export const msalConfig = {
 };
 
 export const loginRequest = {
-  scopes: ["openid", "profile"],
+  scopes: ["openid", "profile", "email"],
 };
 
 export const profileEditAuthority = "https://njitsbc.ciamlogin.com/njitsbc.onmicrosoft.com/tfp/ProfileEdit/v2.0";

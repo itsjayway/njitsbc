@@ -1,49 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useMsal } from "@azure/msal-react";
 import ClipThumbnail from "./ClipThumbnail";
 import ClipModal from "./ClipModal";
 import Pages from "../Pages";
 import type Clip from "../../interfaces/ClipInterface";
-
-// Hook to get user role
-function useUserRole() {
-  const { instance } = useMsal();
-  const [role, setRole] = useState<string>("viewer");
-  const [loading, setLoading] = useState(true);
-  const email = instance.getActiveAccount()?.username;
-
-  useEffect(() => {
-    const fetchRole = async () => {
-      if (!email) return;
-      try {
-        const resp = await fetch(
-          `http://localhost:7071/api/getUserRole?email=${encodeURIComponent(
-            email
-          )}`
-        );
-        const data = await resp.json();
-        setRole(data.role);
-      } catch (err) {
-        console.error("Error fetching role:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRole();
-  }, [email]);
-
-  return {
-    role,
-    loading,
-    canApprove: role === "admin" || role === "moderator",
-  };
-}
+import Navbar from "../Navbar";
+import Button from "../Button";
+import { useUser } from "../../hooks/useUser";
 
 export default function ClipApproval() {
-  const { instance } = useMsal();
-  const { canApprove } = useUserRole();
-  const email = instance.getActiveAccount()?.username;
-
+  const { isAuthenticated, isAdmin, user } = useUser();
   const [clips, setClips] = useState<Clip[]>([]);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
   const [page, setPage] = useState(0);
@@ -51,6 +16,8 @@ export default function ClipApproval() {
   const [filter, setFilter] = useState<
     "all" | "pending" | "approved" | "rejected"
   >("pending");
+
+  const canApprove = isAuthenticated && isAdmin;
 
   useEffect(() => {
     const updateClipsPerPage = () => {
@@ -92,7 +59,7 @@ export default function ClipApproval() {
         body: JSON.stringify({
           clipId,
           approved,
-          userEmail: email,
+          userEmail: user.email,
         }),
       });
 
@@ -134,156 +101,159 @@ export default function ClipApproval() {
   const totalPages = Math.ceil(filteredClips.length / clipsPerPage);
 
   return (
-    <div className="text-white">
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setFilter("pending")}
-          className={`px-4 py-2 rounded ${
-            filter === "pending"
-              ? "bg-yellow-600"
-              : "bg-gray-700 hover:bg-gray-600"
-          }`}
-        >
-          Pending (
-          {
-            clips.filter((c) => c.approved === null || c.approved === undefined)
-              .length
-          }
-          )
-        </button>
-        <button
-          onClick={() => setFilter("approved")}
-          className={`px-4 py-2 rounded ${
-            filter === "approved"
-              ? "bg-green-600"
-              : "bg-gray-700 hover:bg-gray-600"
-          }`}
-        >
-          Approved ({clips.filter((c) => c.approved === true).length})
-        </button>
-        <button
-          onClick={() => setFilter("rejected")}
-          className={`px-4 py-2 rounded ${
-            filter === "rejected"
-              ? "bg-red-600"
-              : "bg-gray-700 hover:bg-gray-600"
-          }`}
-        >
-          Rejected ({clips.filter((c) => c.approved === false).length})
-        </button>
-        <button
-          onClick={() => setFilter("all")}
-          className={`px-4 py-2 rounded ${
-            filter === "all" ? "bg-blue-600" : "bg-gray-700 hover:bg-gray-600"
-          }`}
-        >
-          All ({clips.length})
-        </button>
-      </div>
-
-      {selectedClip && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-          onClick={() => setSelectedClip(null)}
-        >
-          <div
-            className="bg-njit-navy p-4 rounded w-full max-w-4xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="text-white bg-red-600 mb-2 float-right px-4 py-2 rounded"
-              onClick={() => setSelectedClip(null)}
-            >
-              Close
-            </button>
-
-            <ClipModal
-              clip={selectedClip}
-              handleClose={() => setSelectedClip(null)}
-              onPrev={() => {
-                const idx = currPageClips.findIndex(
-                  (c) => c.RowKey === selectedClip?.RowKey
-                );
-                if (idx > 0) setSelectedClip(currPageClips[idx - 1]);
-              }}
-              onNext={() => {
-                const idx = currPageClips.findIndex(
-                  (c) => c.RowKey === selectedClip?.RowKey
-                );
-                if (idx < currPageClips.length - 1)
-                  setSelectedClip(currPageClips[idx + 1]);
-              }}
-              hasPrev={
-                currPageClips.findIndex(
-                  (c) => c.RowKey === selectedClip?.RowKey
-                ) > 0
-              }
-              hasNext={
-                currPageClips.findIndex(
-                  (c) => c.RowKey === selectedClip?.RowKey
-                ) <
-                currPageClips.length - 1
-              }
+    <>
+      <Navbar />
+      <div className="bg-gray-600 w-full min-h-screen p-6 lg:p-12">
+        <div className="text-white">
+          <div className="flex gap-2 mb-4">
+            <Button
+              content={`Pending (${
+                clips.filter(
+                  (c) => c.approved === null || c.approved === undefined
+                ).length
+              })`}
+              onClick={() => setFilter("pending")}
+              className={`px-4 py-2 rounded ${
+                filter === "pending"
+                  ? "bg-yellow-600"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
+            />
+            <Button
+              content={`Approved (${
+                clips.filter((c) => c.approved === true).length
+              })`}
+              onClick={() => setFilter("approved")}
+              className={`px-4 py-2 rounded ${
+                filter === "approved"
+                  ? "bg-green-600"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
+            />
+            <Button
+              content={`Rejected (${
+                clips.filter((c) => c.approved === false).length
+              })`}
+              onClick={() => setFilter("rejected")}
+              className={`px-4 py-2 rounded ${
+                filter === "rejected"
+                  ? "bg-red-600"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
+            />
+            <Button
+              content={`All (${clips.length})`}
+              onClick={() => setFilter("all")}
+              className={`px-4 py-2 rounded ${
+                filter === "all"
+                  ? "bg-blue-600"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
             />
           </div>
-        </div>
-      )}
 
-      <Pages
-        page={page}
-        totalPages={totalPages}
-        onPrev={() => setPage((p) => Math.max(p - 1, 0))}
-        onNext={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
-        setPage={setPage}
-      >
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 h-full">
-          {currPageClips.map((clip) => (
-            <div key={clip.RowKey} className="relative">
-              {ClipThumbnail({
-                onClick: () => setSelectedClip(clip),
-                clip: clip,
-              })}
-              <div className="absolute top-2 right-2">
-                {clip.approved === true && (
-                  <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
-                    ✓ Approved
-                  </span>
-                )}
-                {clip.approved === false && (
-                  <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-                    ✗ Rejected
-                  </span>
-                )}
-                {(clip.approved === null || clip.approved === undefined) && (
-                  <span className="bg-yellow-600 text-white px-2 py-1 rounded text-xs font-bold">
-                    ⏳ Pending
-                  </span>
-                )}
-              </div>
-              <div className="flex gap-4 mt-4 justify-center">
-                <button
-                  onClick={() => handleApproval(clip.RowKey, true)}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold"
-                >
-                  Approve
-                </button>
-                <button
-                  onClick={() => handleApproval(clip.RowKey, false)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-semibold"
-                >
-                  Reject
-                </button>
+          {selectedClip && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
+              onClick={() => setSelectedClip(null)}
+            >
+              <div
+                className="bg-njit-navy p-4 rounded w-full max-w-4xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button
+                  content="Close"
+                  className="text-white bg-red-600 mb-2 float-right px-4 py-2 rounded"
+                  onClick={() => setSelectedClip(null)}
+                />
+                <ClipModal
+                  clip={selectedClip}
+                  handleClose={() => setSelectedClip(null)}
+                  onPrev={() => {
+                    const idx = currPageClips.findIndex(
+                      (c) => c.RowKey === selectedClip?.RowKey
+                    );
+                    if (idx > 0) setSelectedClip(currPageClips[idx - 1]);
+                  }}
+                  onNext={() => {
+                    const idx = currPageClips.findIndex(
+                      (c) => c.RowKey === selectedClip?.RowKey
+                    );
+                    if (idx < currPageClips.length - 1)
+                      setSelectedClip(currPageClips[idx + 1]);
+                  }}
+                  hasPrev={
+                    currPageClips.findIndex(
+                      (c) => c.RowKey === selectedClip?.RowKey
+                    ) > 0
+                  }
+                  hasNext={
+                    currPageClips.findIndex(
+                      (c) => c.RowKey === selectedClip?.RowKey
+                    ) <
+                    currPageClips.length - 1
+                  }
+                />
               </div>
             </div>
-          ))}
-        </div>
-      </Pages>
+          )}
 
-      {filteredClips.length === 0 && (
-        <div className="text-center text-gray-400 mt-8">
-          <p>No clips found for "{filter}" filter.</p>
+          <Pages
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => Math.max(p - 1, 0))}
+            onNext={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
+            setPage={setPage}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 h-full">
+              {currPageClips.map((clip) => (
+                <div key={clip.RowKey} className="relative">
+                  {ClipThumbnail({
+                    onClick: () => setSelectedClip(clip),
+                    clip: clip,
+                  })}
+                  <div className="absolute bottom-20 right-2">
+                    {clip.approved === true && (
+                      <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        ✓ Approved
+                      </span>
+                    )}
+                    {clip.approved === false && (
+                      <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        ✗ Rejected
+                      </span>
+                    )}
+                    {(clip.approved === null ||
+                      clip.approved === undefined) && (
+                      <span className="bg-yellow-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        ⏳ Pending
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-4 mt-4 justify-center">
+                    <Button
+                      content="Approve"
+                      onClick={() => handleApproval(clip.RowKey, true)}
+                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-semibold"
+                    />
+                    <Button
+                      content="Reject"
+                      onClick={() => handleApproval(clip.RowKey, false)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-semibold"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Pages>
+
+          {filteredClips.length === 0 && (
+            <div className="text-center text-gray-400 mt-8">
+              <p>No clips found for "{filter}" filter.</p>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 }
