@@ -21,7 +21,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isAuthenticated = accounts.length > 0;
   const email: string = typeof accounts[0]?.idTokenClaims?.email === "string" ? accounts[0].idTokenClaims.email : "";
-  const user = useGetUserRole(email);
+  const displayName: string = typeof accounts[0]?.name === "string" ? accounts[0].name : "";
+  const localAccountId: string = typeof accounts[0]?.localAccountId === "string" ? accounts[0].localAccountId : "";
+  const user = useGetUserRole(localAccountId, email, displayName);
   const { role } = user;
   const isAdmin = role === "admin";
   const isMember = role === "member";

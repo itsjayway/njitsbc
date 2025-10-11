@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import type UserInfo from "../interfaces/UserInfoInterface";
 
-async function getUserInfo(email: string): Promise<UserInfo> {
+async function getUserInfo(
+  localAccountId: string,
+  email: string,
+  displayName: string
+): Promise<UserInfo> {
   let role = "viewer";
-  let displayName = "";
   try {
     const resp = await fetch(
-      `http://localhost:7071/api/getUserRole?email=${encodeURIComponent(email)}`
+      `http://localhost:7071/api/getUserRole?localAccountId=${encodeURIComponent(
+        localAccountId
+      )}&displayName=${encodeURIComponent(
+        displayName
+      )}&email=${encodeURIComponent(email)}`
     );
     const data = await resp.json();
     role = data.role;
@@ -18,7 +25,11 @@ async function getUserInfo(email: string): Promise<UserInfo> {
   return { role, displayName, email };
 }
 
-export default function useGetUserRole(systemUsername: string): UserInfo {
+export default function useGetUserRole(
+  localAccountId: string,
+  email: string,
+  displayName: string
+): UserInfo {
   const [user, setUser] = useState<UserInfo>({
     role: "viewer",
     displayName: "",
@@ -26,11 +37,13 @@ export default function useGetUserRole(systemUsername: string): UserInfo {
   });
 
   useEffect(() => {
-    if (systemUsername)
-      getUserInfo(systemUsername).then(({ role, displayName, email }) => {
-        setUser({ role, displayName, email });
-      });
-  }, [systemUsername]);
+    if (localAccountId && email && displayName)
+      getUserInfo(localAccountId, email, displayName).then(
+        ({ role, displayName, email }) => {
+          setUser({ role, displayName, email });
+        }
+      );
+  }, [localAccountId, email, displayName]);
 
   return user;
 }

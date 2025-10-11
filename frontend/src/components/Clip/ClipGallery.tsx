@@ -115,7 +115,6 @@ export default function ClipGallery() {
         >
           <AnimatePresence
             mode="wait"
-            // ⬇️ Triggered after fade-out of old content finishes
             onExitComplete={() => {
               if (galleryRef.current) {
                 galleryRef.current.scrollIntoView({ behavior: "smooth" });

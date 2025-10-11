@@ -4,6 +4,7 @@ import os
 from azure.core.credentials import AzureNamedKeyCredential
 from azure.data.tables import TableClient
 from dotenv import load_dotenv
+from datetime import datetime
 import azure.functions as func
 
 load_dotenv()
@@ -16,6 +17,9 @@ USERS_TABLE = "users"
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         email = req.params.get("email")
+        display_name = req.params.get("displayName")
+        user_id = req.params.get("localAccountId")
+
         if not email:
             return func.HttpResponse("Email required", status_code=400)
 
@@ -33,15 +37,24 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             break
 
         if not user:
-            return func.HttpResponse(
-                json.dumps({"status_code": 404, "message": "User not found"}),
-                status_code=404,
-            )
+            print("#### Registering new user")
+            entity = {
+                "PartitionKey": "users",
+                "RowKey": user_id,
+                "displayName": display_name,
+                "email": email,
+                "createdAt": datetime.utcnow().isoformat(),
+                "role": "viewer",
+            }
+            print(entity)
+            table_client.create_entity(entity=entity)
+            user = entity
+            # return func.HttpResponse(
+            #     json.dumps({"status_code": 404, "message": "User not found"}),
+            #     status_code=404,
+            # )
 
-        role = user.get("role", "viewer")
-
-        display_name = user.get("displayName", None)
-        email = user.get("email", None)
+        role = user.get("role")
         if not all([role, display_name, email]):
             return func.HttpResponse("User data incomplete", status_code=500)
         content = {"display_name": display_name, "role": role, "email": email}

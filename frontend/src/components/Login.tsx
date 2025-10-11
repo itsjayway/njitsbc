@@ -1,28 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
 import Button from "./Button";
-import { useRegisterUser } from "../hooks/useRegisterUser";
 
 interface LoginProps {
   showProfileEdit?: boolean;
-  buttonClassName?: string;
+  className?: string;
   text?: string;
 }
 
 export default function Login({
-  buttonClassName = "bg-njit-red-dark",
+  className = "bg-njit-red-dark",
   text: buttonText = "Login",
 }: LoginProps) {
   const { instance, accounts } = useMsal();
   const isAuthenticated = accounts.length > 0;
 
-  useRegisterUser();
-
   const handleLogin = async () => {
     try {
       await instance.loginPopup(loginRequest);
-      useRegisterUser();
     } catch (err) {
       console.error("Login failed:", err);
     }
@@ -43,7 +39,7 @@ export default function Login({
       <Button
         content="Logout"
         onClick={handleLogout}
-        className={buttonClassName}
+        className={className}
       />
     );
   }
@@ -52,7 +48,7 @@ export default function Login({
     <Button
       content={buttonText}
       onClick={handleLogin}
-      className={buttonClassName}
+      className={className}
     />
   );
 }
