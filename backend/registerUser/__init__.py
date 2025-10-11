@@ -9,6 +9,7 @@ ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
 ACCOUNT_KEY = os.getenv("AZURE_STORAGE_ACCOUNT_KEY")
 USERS_TABLE = "users"
 
+
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         data = req.get_json()
@@ -20,19 +21,28 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         table_client = TableClient(
             endpoint=f"https://{ACCOUNT_NAME}.table.core.windows.net",
             table_name=USERS_TABLE,
-            credential=credential
+            credential=credential,
         )
 
-        entity = {
-            "PartitionKey": "users",
-            "RowKey": user_id,
-            "displayName": display_name,
-            "email": email,
-            "createdAt": datetime.utcnow().isoformat(),
-            "role": "viewer"
-        }
+        # check if user already exists
+        try:
+            table_client.get_entity(partition_key="users", row_key=user_id)
+            return func.HttpResponse(
+                json.dumps({"status": "exists"}),
+                mimetype="application/json",
+                status_code=200,
+            )
+        except:
+            entity = {
+                "PartitionKey": "users",
+                "RowKey": user_id,
+                "displayName": display_name,
+                "email": email,
+                "createdAt": datetime.utcnow().isoformat(),
+                "role": "viewer"
+            }
 
-        table_client.upsert_entity(entity)
+            table_client.upsert_entity(entity)
 
         return func.HttpResponse(
             json.dumps({"status": "ok"}),

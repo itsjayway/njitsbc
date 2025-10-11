@@ -13,9 +13,7 @@ import Login from "./components/Login";
 export default function Landing() {
   return (
     <>
-      <AuthenticatedTemplate>
-        <MediaUpload />
-      </AuthenticatedTemplate>
+      <MediaUpload />
       <div className="min-h-screen flex flex-col bg-njit-navy-dark text-white">
         <Navbar />
         <header className="flex flex-col xl:flex-row flex-1 justify-center items-center px-10 text-center bg-gradient-to-b from-njit-navy to-njit-navy-dark">

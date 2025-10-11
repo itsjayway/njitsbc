@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type UserInfo from "../interfaces/UserInfoInterface";
 
 async function getUserInfo(email: string): Promise<UserInfo> {
-  let role = "guest";
+  let role = "viewer";
   let displayName = "";
   try {
     const resp = await fetch(
@@ -20,7 +20,7 @@ async function getUserInfo(email: string): Promise<UserInfo> {
 
 export default function useGetUserRole(systemUsername: string): UserInfo {
   const [user, setUser] = useState<UserInfo>({
-    role: "guest",
+    role: "viewer",
     displayName: "",
     email: "",
   });

@@ -24,6 +24,7 @@ export default function Login({
   const handleLogin = async () => {
     try {
       await instance.loginPopup(loginRequest);
+      useRegisterUser();
     } catch (err) {
       console.error("Login failed:", err);
     }
