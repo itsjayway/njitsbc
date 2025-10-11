@@ -12,6 +12,7 @@
   "dependencies": {
     "@azure/msal-browser": "^4.24.1",
     "@azure/msal-react": "^3.0.20",
+    "framer-motion": "^12.23.24",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.3"
@@ -26,6 +27,7 @@
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
+    "fluid-tailwind": "^1.0.4",
     "globals": "^16.4.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",

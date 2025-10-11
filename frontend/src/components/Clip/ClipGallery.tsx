@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import ClipThumbnail from "./ClipThumbnail";
 import ClipModal from "./ClipModal";
 import Pages from "../Pages";
@@ -7,20 +8,16 @@ import type Clip from "../../interfaces/ClipInterface";
 export default function ClipGallery() {
   const [clips, setClips] = useState<Clip[]>([]);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
-
   const [page, setPage] = useState(0);
   const [clipsPerPage, setClipsPerPage] = useState(4);
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   // change pagination based on screen size. this should match the grid cols in Pages children
   useEffect(() => {
     const updateClipsPerPage = () => {
-      if (window.innerWidth >= 1280) {
-        setClipsPerPage(4);
-      } else if (window.innerWidth >= 768) {
-        setClipsPerPage(3);
-      } else {
-        setClipsPerPage(1);
-      }
+      if (window.innerWidth >= 1280) setClipsPerPage(4);
+      else if (window.innerWidth >= 800) setClipsPerPage(3);
+      else setClipsPerPage(2);
     };
     updateClipsPerPage();
     window.addEventListener("resize", updateClipsPerPage);
@@ -29,10 +26,8 @@ export default function ClipGallery() {
 
   useEffect(() => {
     const fetchClips = async () => {
-      console.log("Fetching clips...");
       const resp = await fetch("http://localhost:7071/api/listClips");
       const data = await resp.json();
-
       setClips(data);
     };
     fetchClips();
@@ -43,15 +38,21 @@ export default function ClipGallery() {
   const currPageClips = clips.slice(startIdx, endIdx);
   const totalPages = Math.ceil(clips.length / clipsPerPage);
 
-  const decrementPage = () => {
-    setPage((p) => Math.max(p - 1, 0));
+  const handlePageChange = (newPage: number) => {
+    if (newPage === page) return;
+    setPage(newPage);
   };
 
   const incrementPage = () => {
     setPage((p) => Math.min(p + 1, totalPages - 1));
   };
+
+  const decrementPage = () => {
+    setPage((p) => Math.max(p - 1, 0));
+  };
+
   return (
-    <div className="">
+    <>
       {selectedClip && (
         <ClipModal
           clip={selectedClip}
@@ -93,31 +94,53 @@ export default function ClipGallery() {
           hasPrev={
             page > 0 ||
             currPageClips.findIndex((c) => c.RowKey === selectedClip?.RowKey) >
-              0
+            0
           }
           hasNext={
             page < totalPages - 1 ||
             currPageClips.findIndex((c) => c.RowKey === selectedClip?.RowKey) <
-              currPageClips.length - 1
+            currPageClips.length - 1
           }
         />
       )}
-      <Pages
-        page={page}
-        totalPages={totalPages}
-        onPrev={() => setPage((p) => Math.max(p - 1, 0))}
-        onNext={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
-        setPage={setPage}
-      >
-        <div className="grid grid-rows-1 grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 h-full">
-          {currPageClips.map((clip) =>
-            ClipThumbnail({
-              onClick: () => setSelectedClip(clip),
-              clip: clip,
-            })
-          )}
-        </div>
-      </Pages>
-    </div>
+      <div ref={galleryRef}>
+
+
+        <Pages
+          page={page}
+          totalPages={totalPages}
+          onPrev={() => handlePageChange(Math.max(page - 1, 0))}
+          onNext={() => handlePageChange(Math.min(page + 1, totalPages - 1))}
+          setPage={handlePageChange}
+        >
+          <AnimatePresence
+            mode="wait"
+            // ⬇️ Triggered after fade-out of old content finishes
+            onExitComplete={() => {
+              if (galleryRef.current) {
+                galleryRef.current.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+          >
+            <motion.div
+              key={page}
+              className="grid grid-rows-1 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.30 }}
+            >
+              {currPageClips.map((clip) => (
+                <ClipThumbnail
+                  key={clip.RowKey}
+                  onClick={() => setSelectedClip(clip)}
+                  clip={clip}
+                />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </Pages>
+      </div>
+    </>
   );
 }
