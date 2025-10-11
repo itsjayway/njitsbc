@@ -19,7 +19,7 @@ export default function Button({
       onClick={onClick}
       className={classes(
         className,
-        "font-semibold text-2xl rounded-xl transition px-5 py-3 leading-tight"
+        "font-semibold text-lg rounded-xl transition px-5 py-3 leading-tight"
       )}
       disabled={disabled}
     >

@@ -19,7 +19,7 @@ export default function ClipGallery() {
       } else if (window.innerWidth >= 768) {
         setClipsPerPage(3);
       } else {
-        setClipsPerPage(4);
+        setClipsPerPage(1);
       }
     };
     updateClipsPerPage();
@@ -109,7 +109,7 @@ export default function ClipGallery() {
         onNext={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
         setPage={setPage}
       >
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 h-full">
+        <div className="grid grid-rows-1 grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 h-full">
           {currPageClips.map((clip) =>
             ClipThumbnail({
               onClick: () => setSelectedClip(clip),

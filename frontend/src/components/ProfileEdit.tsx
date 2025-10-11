@@ -10,9 +10,10 @@ await msalInstance.initialize();
 
 interface ProfileEditProps {
   disabled?: boolean;
+  className?: string;
 }
 
-export default function ProfileEdit({ disabled = false }: ProfileEditProps) {
+export default function ProfileEdit({ disabled = false, className = "" }: ProfileEditProps) {
   const handleProfileEdit = async () => {
     await msalInstance.loginPopup({
       ...loginRequest,
@@ -25,7 +26,8 @@ export default function ProfileEdit({ disabled = false }: ProfileEditProps) {
       className={classes(
         disabled
           ? "bg-gray-400 cursor-not-allowed"
-          : "bg-njit-navy hover:bg-njit-navy-dark"
+          : "bg-njit-navy hover:bg-njit-navy-dark",
+        className
       )}
       onClick={handleProfileEdit}
       disabled={disabled}

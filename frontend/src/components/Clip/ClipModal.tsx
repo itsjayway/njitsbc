@@ -48,7 +48,7 @@ export default function ClipModal({
       onClick={handleClose}
     >
       <div
-        className="bg-njit-navy p-4 rounded w-full max-w-4xl"
+        className="bg-njit-navy p-10 rounded w-full max-w-4xl"
         onClick={(e) => e.stopPropagation()}
       >
         <Button
@@ -59,7 +59,7 @@ export default function ClipModal({
         {clipIsImage && (
           <img
             src={clip.blobUrl}
-            className="w-full rounded object-contain max-h-[75vh]"
+            className="w-full rounded object-contain max-h-[40vh]"
             alt={clip.description || "Clip image"}
           />
         )}
@@ -68,12 +68,12 @@ export default function ClipModal({
             src={clip.blobUrl}
             controls
             autoPlay
-            className="w-full rounded object-contain max-h-[75vh]"
+            className="w-full rounded object-contain max-h-[55vh]"
           />
         )}
         <div className="flex w-full justify-center items-start py-4">
           <div className="flex flex-col text-white text-left w-[100%]">
-            <div className="text-left text-4xl">
+            <div className="text-left text-xl lg:text-4xl">
               <span
                 className={classes(
                   "font-brick",
@@ -84,12 +84,15 @@ export default function ClipModal({
               </span>
               <span>{clip.date && ` // ${clip.date}`}</span>
             </div>
-            <p>
-              <strong>Description:</strong> {clip.description}
-            </p>
-            <p>
-              <strong>Location:</strong> {clip.location}
-            </p>
+            <div className="text-sm lg:text-2xl">
+
+              <p className="">
+                <strong>Description:</strong> {clip.description}
+              </p>
+              <p>
+                <strong>Location:</strong> {clip.location}
+              </p>
+            </div>
           </div>
         </div>
         <div className="flex justify-between mb-2">

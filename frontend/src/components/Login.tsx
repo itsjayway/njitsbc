@@ -2,7 +2,6 @@ import React from "react";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
 import Button from "./Button";
-import ProfileEdit from "./ProfileEdit";
 import { useRegisterUser } from "../hooks/useRegisterUser";
 
 interface LoginProps {
@@ -12,7 +11,6 @@ interface LoginProps {
 }
 
 export default function Login({
-  showProfileEdit = false,
   buttonClassName = "bg-njit-red-dark",
   text: buttonText = "Login",
 }: LoginProps) {
@@ -42,14 +40,11 @@ export default function Login({
 
   if (isAuthenticated) {
     return (
-      <div className="flex items-center gap-4">
-        {showProfileEdit && <ProfileEdit disabled={true} />}
-        <Button
-          content="Logout"
-          onClick={handleLogout}
-          className={buttonClassName}
-        />
-      </div>
+      <Button
+        content="Logout"
+        onClick={handleLogout}
+        className={buttonClassName}
+      />
     );
   }
 
