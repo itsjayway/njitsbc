@@ -1,5 +1,6 @@
 import React from "react";
 import Button from "./Button";
+import classes from "../utils/classes";
 
 interface PagesProps {
   page: number;
@@ -18,27 +19,29 @@ export default function Pages({
   setPage,
   children,
 }: PagesProps) {
+  const buttonColor = "bg-gray-300 rounded disabled:opacity-50 animate-pulse";
+  const buttonDisabled = "pointer-events-none select-none";
   return (
-    <div>
-      <div className="flex justify-center items-center space-x-4 mb-4 w-full h-full">
+    <>
+      <div className="flex justify-center items-center space-x-4 mb-4">
         {totalPages > 1 && (
           <Button
-            content="Previous"
+            content="Prev"
             onClick={onPrev}
             disabled={page === 0}
-            className={`bg-gray-700 rounded disabled:opacity-50${
-              page === 0 ? " opacity-0 pointer-events-none" : ""
-            }`}
+            className={classes(buttonColor,
+              page === 0 ? buttonDisabled : ""
+            )}
           />
         )}
-        <div>{children}</div>
+        {children}
         {totalPages > 1 && (
           <Button
             onClick={onNext}
             disabled={page >= totalPages - 1}
-            className={`bg-gray-700 rounded disabled:opacity-50${
-              page >= totalPages - 1 ? " opacity-0 pointer-events-none" : ""
-            }`}
+            className={classes(buttonColor,
+              page >= totalPages - 1 ? buttonDisabled : ""
+            )}
             content="Next"
           />
         )}
@@ -50,14 +53,15 @@ export default function Pages({
               key={i}
               content={(i + 1).toString()}
               onClick={() => setPage(i)}
-              className={`${
-                i === page ? "bg-njit-red" : "bg-gray-700"
-              } rounded disabled:opacity-50`}
+              className={classes(
+                i === page ? "bg-gray-400" : "bg-gray-200",
+                "rounded disabled:opacity-50"
+              )}
               disabled={i === page}
             />
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

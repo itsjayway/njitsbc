@@ -13,15 +13,18 @@ export default function ClipThumbnail({ onClick, clip }: ClipThumbnailProps) {
   const { instance } = useMsal();
   const username = instance.getActiveAccount()?.name;
 
-  const clipIsVideo = validateFileExt(clip.fileName, ["mp4", "mov", "webm"]);
-  const clipIsImage = validateFileExt(clip.fileName, ["jpg", "jpeg", "png"]);
+  const fileNameLowercase = clip.fileName.toLowerCase();
+  const clipIsVideo = validateFileExt(fileNameLowercase, ["mp4", "mov", "webm"]);
+  const clipIsImage = validateFileExt(fileNameLowercase, ["jpg", "jpeg", "png"]);
   return (
     <div key={clip.RowKey} className="cursor-pointer" onClick={() => onClick()}>
       <div className="relative">
-        <div className="absolute top-3 right-3">
+
+        {/* username as tag */}
+        <div className="hidden sm:flex absolute top-3 right-3">
           <span
             className={classes(
-              " bg-opacity-75 px-2 py-1 rounded-lg text-xl",
+              "bg-opacity-75 px-2 py-1 rounded-lg text-xl",
               clip.uploadedBy === username
                 ? "bg-gray-200 text-gray-800"
                 : "bg-gray-800 text-white font-light"

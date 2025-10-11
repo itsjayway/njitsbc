@@ -10,7 +10,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, user } = useUser();
   return (
-    <nav className="flex flex-col md:flex-row p-4 bg-njit-red-dark justify-between" >
+    <nav className="flex flex-col md:flex-row p-4 bg-njit-red-dark justify-between gap-y-3" >
       <h1
         className="text-2xl lg:text-4xl font-brick cursor-pointer text-center lg:text-start"
         onClick={() => navigate("/")}
@@ -20,8 +20,8 @@ export default function Navbar() {
       </h1>
       <div
         className={classes(
-          "flex flex-col items-center",
-          "md:flex-row md:space-x-2 md:items-end"
+          "flex flex-col items-center gap-y-2 text-xl",
+          "md:text-2xl md:flex-row md:space-x-2 md:items-end"
         )}
       >
         {isAuthenticated && (
@@ -36,7 +36,7 @@ export default function Navbar() {
           </>
         )}
 
-        <Login buttonClassName="bg-red-500 text-gray-800 w-full" />
+        <Login className="bg-red-500 text-gray-800 w-full" />
       </div>
     </nav>
   );
