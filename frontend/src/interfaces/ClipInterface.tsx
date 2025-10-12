@@ -8,4 +8,5 @@ export default interface Clip {
   uploadedBy: string;
   approved: boolean | null;
   approvedBy?: string;
+  thumbnail?: string;
 }
