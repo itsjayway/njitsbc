@@ -24,7 +24,6 @@ export default function MediaUpload() {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  // const [videoFrame, setVideoFrame] = useState<number | null>(null); // TODO
 
   const handleUpload = async () => {
     if (!file) {
@@ -70,7 +69,6 @@ export default function MediaUpload() {
             description,
             blobUrl,
             user: user.displayName,
-            // videoFrame, // TODO
           }),
         });
         alert("Upload successful!");
@@ -90,21 +88,14 @@ export default function MediaUpload() {
       {isAuthenticated && (isAdmin || isMember) && (
         <div
           className={classes(
-            "fixed top-1/2 right-0 z-50 flex items-center justify-center transition-transform duration-300 origin-right",
-            modalOpen ? "" : "translate-x-[80%]"
+            // small screens: center
+            "fixed bottom-0 left-0 right-0 sm:right-10 z-50",
+            "flex flex-col items-center sm:items-end",
           )}
-          style={{
-            transform: modalOpen
-              ? "translateY(-50%) rotate(0deg)"
-              : "translateY(-50%) rotate(0deg)",
-          }}
         >
           <div
-            className="absolute bg-njit-red text-white px-4 py-2 rounded-l-lg text-lg font-semibold hover:bg-njit-red-dark transition cursor-pointer flex items-center justify-center transform -rotate-90 text-nowrap"
+            className="bg-njit-red text-white text-2xl font-bold px-4 py-2 rounded-tr-lg rounded-tl-lg cursor-pointer w-64"
             onClick={() => setModalOpen(!modalOpen)}
-            style={{
-              transformOrigin: "bottom right",
-            }}
           >
             Upload Media
             <img
@@ -118,7 +109,7 @@ export default function MediaUpload() {
           {modalOpen && (
             <div
               className={classes(
-                "bg-njit-navy p-6 rounded-l-lg shadow-lg flex flex-col gap-4 w-80 transition-all duration-300 ease-in-out"
+                "bg-njit-navy p-6 rounded-l-lg shadow-lg flex flex-col gap-4 w-[100vw] sm:w-[400px]"
               )}
             >
               <input

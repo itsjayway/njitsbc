@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ClipThumbnail from "./ClipThumbnail";
-import ClipModal from "./ClipModal";
+import ClipThumbnail from "../Clip/ClipThumbnail";
+import ClipModal from "../Clip/ClipModal";
 import Paginator from "../Pagninator";
 import type Clip from "../../interfaces/ClipInterface";
-import Navbar from "../Navbar";
+import Navbar from "./components/Navbar";
 import Button from "../Button";
 import { useUser } from "../../hooks/useUser";
 
@@ -19,26 +19,12 @@ export default function ClipApproval() {
 
   const canApprove = isAuthenticated && isAdmin;
 
-  useEffect(() => {
-    const updateClipsPerPage = () => {
-      if (window.innerWidth >= 1280) {
-        setClipsPerPage(4);
-      } else if (window.innerWidth >= 768) {
-        setClipsPerPage(3);
-      } else {
-        setClipsPerPage(4);
-      }
-    };
-    updateClipsPerPage();
-    window.addEventListener("resize", updateClipsPerPage);
-    return () => window.removeEventListener("resize", updateClipsPerPage);
-  }, []);
-
   const fetchClips = async () => {
     try {
       console.log("Fetching all clips for approval...");
       const resp = await fetch("http://localhost:7071/api/listAllClips");
       const data = await resp.json();
+      console.log("Clips fetched:", data);
       setClips(data);
     } catch (err) {
       console.error("Error fetching clips:", err);
@@ -107,48 +93,41 @@ export default function ClipApproval() {
         <div className="text-white">
           <div className="flex gap-2 mb-4">
             <Button
-              content={`Pending (${
-                clips.filter(
-                  (c) => c.approved === null || c.approved === undefined
-                ).length
-              })`}
+              content={`Pending (${clips.filter(
+                (c) => c.approved === null || c.approved === undefined
+              ).length
+                })`}
               onClick={() => setFilter("pending")}
-              className={`px-4 py-2 rounded ${
-                filter === "pending"
-                  ? "bg-yellow-600"
-                  : "bg-gray-700 hover:bg-gray-600"
-              }`}
+              className={`px-4 py-2 rounded ${filter === "pending"
+                ? "bg-yellow-600"
+                : "bg-gray-700 hover:bg-gray-600"
+                }`}
             />
             <Button
-              content={`Approved (${
-                clips.filter((c) => c.approved === true).length
-              })`}
+              content={`Approved (${clips.filter((c) => c.approved === true).length
+                })`}
               onClick={() => setFilter("approved")}
-              className={`px-4 py-2 rounded ${
-                filter === "approved"
-                  ? "bg-green-600"
-                  : "bg-gray-700 hover:bg-gray-600"
-              }`}
+              className={`px-4 py-2 rounded ${filter === "approved"
+                ? "bg-green-600"
+                : "bg-gray-700 hover:bg-gray-600"
+                }`}
             />
             <Button
-              content={`Rejected (${
-                clips.filter((c) => c.approved === false).length
-              })`}
+              content={`Rejected (${clips.filter((c) => c.approved === false).length
+                })`}
               onClick={() => setFilter("rejected")}
-              className={`px-4 py-2 rounded ${
-                filter === "rejected"
-                  ? "bg-red-600"
-                  : "bg-gray-700 hover:bg-gray-600"
-              }`}
+              className={`px-4 py-2 rounded ${filter === "rejected"
+                ? "bg-red-600"
+                : "bg-gray-700 hover:bg-gray-600"
+                }`}
             />
             <Button
               content={`All (${clips.length})`}
               onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded ${
-                filter === "all"
-                  ? "bg-blue-600"
-                  : "bg-gray-700 hover:bg-gray-600"
-              }`}
+              className={`px-4 py-2 rounded ${filter === "all"
+                ? "bg-blue-600"
+                : "bg-gray-700 hover:bg-gray-600"
+                }`}
             />
           </div>
 
@@ -208,11 +187,17 @@ export default function ClipApproval() {
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 h-full">
               {currPageClips.map((clip) => (
                 <div key={clip.RowKey} className="relative">
-                  {ClipThumbnail({
-                    onClick: () => setSelectedClip(clip),
-                    clip: clip,
-                  })}
-                  <div className="absolute bottom-20 right-2">
+                  <ClipThumbnail
+                    key={clip.RowKey}
+                    onClick={() => setSelectedClip(clip)}
+                    clip={clip}
+                  />
+                  <p className="text-center">
+                    {clip.approved === true && "Approved"}
+                    {clip.approved === false && "Rejected"}
+                    {(clip.approved === null || clip.approved === undefined) && "Pending"}
+                  </p>
+                  {/* <div className="absolute bottom-20 right-2">
                     {clip.approved === true && (
                       <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
                         ✓ Approved
@@ -225,11 +210,11 @@ export default function ClipApproval() {
                     )}
                     {(clip.approved === null ||
                       clip.approved === undefined) && (
-                      <span className="bg-yellow-600 text-white px-2 py-1 rounded text-xs font-bold">
-                        ⏳ Pending
-                      </span>
-                    )}
-                  </div>
+                        <span className="bg-yellow-600 text-white px-2 py-1 rounded text-xs font-bold">
+                          ⏳ Pending
+                        </span>
+                      )}
+                  </div> */}
                   <div className="flex gap-4 mt-4 justify-center">
                     <Button
                       content="Approve"

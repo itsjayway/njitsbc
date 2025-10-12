@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import VideoPlayer from "./components/VideoPlayer";
-import Navbar from "./components/Navbar";
 import {
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
-import MediaUpload from "./components/MediaUpload";
-import ClipGallery from "./components/Clip/ClipGallery";
-import Button from "./components/Button";
-import Login from "./components/Login";
-import classes from "./utils/classes";
+import classes from "../../utils/classes";
+
+import VideoPlayer from "../VideoPlayer";
+import MediaUpload from "../MediaUpload";
+import ClipGallery from "../Clip/ClipGallery";
+import Button from "../Button";
+import Login from "../Login";
 
 export default function Landing() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -24,7 +24,6 @@ export default function Landing() {
   return (
     <>
       <MediaUpload />
-      <Navbar />
       <section className="bg-gradient-to-b from-njit-navy to-njit-navy-dark p-5">
 
         <div
@@ -72,12 +71,6 @@ export default function Landing() {
           <p className="text-gray-200 font-bold text-center italic">Please rotate your device or visit our site on a larger screen!</p>
         )}
       </section>
-      <footer className="bg-gray-900 text-gray-400 py-6 text-center border-t border-gray-800">
-        <p>
-          © {new Date().getFullYear()} NJIT Skateboard Club. All rights
-          reserved.
-        </p>
-      </footer>
     </>
   );
 }
