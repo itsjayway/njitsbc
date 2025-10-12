@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ClipThumbnail from "./ClipThumbnail";
 import ClipModal from "./ClipModal";
-import Pages from "../Pages";
+import Paginator from "../Pagninator";
 import type Clip from "../../interfaces/ClipInterface";
 import Navbar from "../Navbar";
 import Button from "../Button";
@@ -198,7 +198,7 @@ export default function ClipApproval() {
             </div>
           )}
 
-          <Pages
+          <Paginator
             page={page}
             totalPages={totalPages}
             onPrev={() => setPage((p) => Math.max(p - 1, 0))}
@@ -245,7 +245,7 @@ export default function ClipApproval() {
                 </div>
               ))}
             </div>
-          </Pages>
+          </Paginator>
 
           {filteredClips.length === 0 && (
             <div className="text-center text-gray-400 mt-8">
