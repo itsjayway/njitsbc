@@ -29,9 +29,7 @@ export default function About() {
                     author="Jibran A."
                     gradYear={23}
                 />
-
             </div>
-
         </div>
     );
 }

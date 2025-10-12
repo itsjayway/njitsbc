@@ -10,6 +10,8 @@ import ClipGallery from "../Clip/ClipGallery";
 import Button from "../Button";
 import Login from "../Login";
 
+import newTabIcon from "../../assets/icons/new-tab.svg";
+
 export default function Landing() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
@@ -32,7 +34,7 @@ export default function Landing() {
           )}
         >
           <VideoPlayer
-            className="min-w-[300px] w-[50vw] h-[50vh] rounded-lg"
+            className="min-w-[300px] w-[60vw] h-[60vh] rounded-lg"
             source="https://www.youtube.com/watch?v=9hFoujPZfko"
             orientation="horizontal"
           />
@@ -47,7 +49,6 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-x-5 gap-y-2">
               <Button
-                content="Join on CampusLabs"
                 className="bg-yellow-400 hover:bg-yellow-300 text-xl text-nowrap"
                 onClick={() => {
                   window.open(
@@ -55,7 +56,16 @@ export default function Landing() {
                     "_blank"
                   );
                 }}
-              />
+              >
+                <div className="flex items-center justify-center gap-x-1">
+                  <span>Join on CampusLabs</span>
+                  <img
+                    src={newTabIcon}
+                    alt="New Tab"
+                    className="inline w-4 h-4 ml-1"
+                  />
+                </div>
+              </Button>
               <UnauthenticatedTemplate>
                 <Login className="text-xl bg-red-700 text-nowrap" text="Login to Upload" />
               </UnauthenticatedTemplate>

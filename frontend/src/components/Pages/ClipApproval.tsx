@@ -88,7 +88,6 @@ export default function ClipApproval() {
 
   return (
     <>
-      <Navbar />
       <div className="bg-gray-600 w-full min-h-screen p-6 lg:p-12">
         <div className="text-white">
           <div className="flex gap-2 mb-4">

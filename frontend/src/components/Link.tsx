@@ -1,14 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import classes from "../utils/classes";
 interface LinkProps {
     path: string;
+    className?: string;
     children: React.ReactNode;
 }
-export default function Link({ path, children }: LinkProps) {
+export default function Link({ path, className, children }: LinkProps) {
     const navigate = useNavigate();
     return (<a
-        className="text-2xl font-bold cursor-pointer hover:text-njit-red"
+        className={classes("text-2xl font-bold cursor-pointer",
+            className
+        )}
         href={path} onClick={(e) => {
-        e.preventDefault();
-        navigate(path);
-    }}>{children}</a>);
+            e.preventDefault();
+            navigate(path);
+        }}>{children}</a>);
 }

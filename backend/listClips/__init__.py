@@ -32,7 +32,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
         entities = table_client.list_entities(filter="approved eq true")
         clips = sorted(
-            [entity for entity in entities if entity.get("approved") is True],
+            [entity for entity in entities if entity.get("approved")],
             key=lambda x: x["date"],
             reverse=True,
         )
@@ -64,7 +64,7 @@ def is_video_file(filename: str) -> bool:
 def get_nth_frame(video_url: str, n: int) -> str:
     cap = cv2.VideoCapture(video_url)
     if n == -1:
-        p = .25 # percent progress in the vid
+        p = 0.25  # percent progress in the vid
         n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) * p)
     cap.set(cv2.CAP_PROP_POS_FRAMES, n)
     ret, frame = cap.read()

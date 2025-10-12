@@ -11,7 +11,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <div className="flex flex-col justify-between min-h-screen">
+        <div className="flex flex-col justify-between min-h-screen bg-njit-navy">
           <Navbar />
           <Routes>
             <Route path="/" element={<Landing />} />

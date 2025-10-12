@@ -1,7 +1,7 @@
 import React from "react";
 import Login from "../../Login";
 import Button from "../../Button";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../../hooks/useUser";
 import ProfileEdit from "../../ProfileEdit";
 import classes from "../../../utils/classes";
@@ -45,14 +45,13 @@ export default function Navbar() {
 
       <div className="bg-njit-navy flex justify-center items-center py-5">
         <div className="flex gap-x-10 bg-black py-5 px-10 rounded-[80em] text-white">
-
-          <Link path="/home">
+          <Link className={`${useLocation().pathname === "/" ? "text-njit-red" : "hover:text-amber-500"}`} path="/home">
             Homepage
           </Link>
-          <Link path="/about">
+          <Link className={`${useLocation().pathname === "/about" ? "text-njit-red" : "hover:text-amber-500"}`} path="/about">
             About
           </Link>
-          <Link path="/spots">
+          <Link className={`${useLocation().pathname === "/spots" ? "text-njit-red" : "hover:text-amber-500"}`} path="/spots">
             Campus Spots
           </Link>
         </div>
