@@ -11,7 +11,7 @@ interface PagesProps {
   children: React.ReactNode;
 }
 
-export default function Pages({
+export default function Paginator({
   page,
   totalPages,
   onPrev,

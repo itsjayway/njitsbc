@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ClipThumbnail from "./ClipThumbnail";
 import ClipModal from "./ClipModal";
-import Pages from "../Pages";
+import Paginator from "../Pagninator";
 import type Clip from "../../interfaces/ClipInterface";
 
 export default function ClipGallery() {
@@ -106,7 +106,7 @@ export default function ClipGallery() {
       <div ref={galleryRef}>
 
 
-        <Pages
+        <Paginator
           page={page}
           totalPages={totalPages}
           onPrev={() => handlePageChange(Math.max(page - 1, 0))}
@@ -136,9 +136,8 @@ export default function ClipGallery() {
                   clip={clip}
                 />
               ))}
-            </motion.div>
-          </AnimatePresence>
-        </Pages>
+          </div>
+        </Paginator>
       </div>
     </>
   );
