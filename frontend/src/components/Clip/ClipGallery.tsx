@@ -1,36 +1,26 @@
-import React, { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState, useRef, memo } from "react";
 import ClipThumbnail from "./ClipThumbnail";
 import ClipModal from "./ClipModal";
 import Paginator from "../Pagninator";
 import type Clip from "../../interfaces/ClipInterface";
+import LoadingSpinner from "../LoadingSpinner";
 
-export default function ClipGallery() {
+export default memo(function ClipGallery() {
   const [clips, setClips] = useState<Clip[]>([]);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
   const [page, setPage] = useState(0);
   const [clipsPerPage, setClipsPerPage] = useState(4);
   const galleryRef = useRef<HTMLDivElement>(null);
 
-  // change pagination based on screen size. this should match the grid cols in Pages children
   useEffect(() => {
-    const updateClipsPerPage = () => {
-      if (window.innerWidth >= 1280) setClipsPerPage(4);
-      else if (window.innerWidth >= 800) setClipsPerPage(3);
-      else setClipsPerPage(2);
-    };
-    updateClipsPerPage();
-    window.addEventListener("resize", updateClipsPerPage);
-    return () => window.removeEventListener("resize", updateClipsPerPage);
-  }, []);
-
-  useEffect(() => {
+    let mounted = true;
     const fetchClips = async () => {
       const resp = await fetch("http://localhost:7071/api/listClips");
       const data = await resp.json();
-      setClips(data);
+      if (mounted) setClips(data);
     };
     fetchClips();
+    return () => { mounted = false; };
   }, []);
 
   const startIdx = page * clipsPerPage;
@@ -113,32 +103,27 @@ export default function ClipGallery() {
           onNext={() => handlePageChange(Math.min(page + 1, totalPages - 1))}
           setPage={handlePageChange}
         >
-          <AnimatePresence
-            mode="wait"
-            onExitComplete={() => {
-              if (galleryRef.current) {
-                galleryRef.current.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
-          >
-            <motion.div
-              key={page}
-              className="grid grid-rows-1 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.30 }}
-            >
-              {currPageClips.map((clip) => (
-                <ClipThumbnail
-                  key={clip.RowKey}
-                  onClick={() => setSelectedClip(clip)}
-                  clip={clip}
-                />
+          {clips.length === 0 && (
+            <div className="w-[100vw] flex justify-center items-center text-white gap-x-10">
+              {[...Array(4)].map((_, i) => (
+                <LoadingSpinner key={i} />
               ))}
+            </div>
+          )}
+
+          <div
+            className="grid grid-rows-1 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {currPageClips.map((clip) => (
+              <ClipThumbnail
+                key={clip.RowKey}
+                onClick={() => setSelectedClip(clip)}
+                clip={clip}
+              />
+            ))}
           </div>
         </Paginator>
       </div>
     </>
   );
-}
+});

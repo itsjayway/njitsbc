@@ -24,6 +24,7 @@ export default function MediaUpload() {
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
+  // const [videoFrame, setVideoFrame] = useState<number | null>(null); // TODO
 
   const handleUpload = async () => {
     if (!file) {
@@ -69,6 +70,7 @@ export default function MediaUpload() {
             description,
             blobUrl,
             user: user.displayName,
+            // videoFrame, // TODO
           }),
         });
         alert("Upload successful!");
@@ -88,70 +90,88 @@ export default function MediaUpload() {
       {isAuthenticated && (isAdmin || isMember) && (
         <div
           className={classes(
-            "fixed bottom-10 right-10 z-50 flex flex-col items-end transition-transform duration-300",
-            modalOpen ? "" : "translate-y-[90%]"
+            "fixed top-1/2 right-0 z-50 flex items-center justify-center transition-transform duration-300 origin-right",
+            modalOpen ? "" : "translate-x-[80%]"
           )}
+          style={{
+            transform: modalOpen
+              ? "translateY(-50%) rotate(0deg)"
+              : "translateY(-50%) rotate(0deg)",
+          }}
         >
           <div
-            className="bg-njit-red text-white px-6 py-2 rounded-t-lg text-lg font-semibold hover:bg-njit-red-dark transition cursor-pointer flex items-center justify-center h-20 w-[75%]"
+            className="absolute bg-njit-red text-white px-4 py-2 rounded-l-lg text-lg font-semibold hover:bg-njit-red-dark transition cursor-pointer flex items-center justify-center transform -rotate-90 text-nowrap"
             onClick={() => setModalOpen(!modalOpen)}
+            style={{
+              transformOrigin: "bottom right",
+            }}
           >
             Upload Media
             <img
               src={expandUpIcon}
               alt="Expand"
-              className={`inline-block ml-2 w-5 h-5 transition-transform duration-300 ${modalOpen ? "transform rotate-180" : ""
+              className={`inline-block ml-2 w-5 h-5 transition-transform duration-300 ${modalOpen ? "rotate-180" : ""
                 }`}
             />
           </div>
-          <div
-            className={classes(
-              "bg-njit-navy p-6 rounded-t-lg shadow-lg flex flex-col gap-4 mb-0 transition-all duration-300 ease-in-out overflow-hidden"
-            )}
-          >
-            <input
-              type="file"
-              className="p-2 rounded bg-njit-navy-dark text-white"
-              accept="video/*,image/*"
-              onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-            />
-            <input
-              type="date"
-              className="p-2 rounded bg-njit-navy-dark text-white"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-            <select
-              className="p-2 rounded bg-njit-navy-dark text-white"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+
+          {modalOpen && (
+            <div
+              className={classes(
+                "bg-njit-navy p-6 rounded-l-lg shadow-lg flex flex-col gap-4 w-80 transition-all duration-300 ease-in-out"
+              )}
             >
-              <option value="">Select Location</option>
-              {Object.entries(Locations).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value.toString()}
-                </option>
-              ))}
-            </select>
-            <textarea
-              placeholder="Description"
-              className="p-2 rounded bg-njit-navy-dark text-white placeholder-gray-400"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <button
-              onClick={handleUpload}
-              className="bg-njit-red text-white px-4 py-2 rounded hover:bg-njit-red-dark transition"
-            >
-              Upload
-            </button>
-          </div>
+              <input
+                type="file"
+                className="p-2 rounded bg-njit-navy-dark text-white"
+                accept="video/*,image/*"
+                onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+              />
+              <input
+                type="date"
+                className="p-2 rounded bg-njit-navy-dark text-white"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+              <select
+                className="p-2 rounded bg-njit-navy-dark text-white"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              >
+                <option value="">Select Location</option>
+                {Object.entries(Locations).map(([key, value]) => (
+                  <option key={key} value={key}>
+                    {value.toString()}
+                  </option>
+                ))}
+              </select>
+              <textarea
+                placeholder="Description"
+                className="p-2 rounded bg-njit-navy-dark text-white placeholder-gray-400"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+              <button
+                onClick={handleUpload}
+                className="bg-njit-red text-white px-4 py-2 rounded hover:bg-njit-red-dark transition"
+              >
+                Upload
+              </button>
+            </div>
+          )}
         </div>
       )}
+
       {isAuthenticated && !(isAdmin || isMember) && (
         <div className="fixed bottom-1 right-1 z-50 p-2 bg-njit-red-dark rounded-lg shadow-lg">
-          <p className="text-gray-200 text-xs"><em>Request upload access: </em>
-            <a href="https://discord.gg/xXrxDgQHwe" className="underline" target="_blank" rel="noopener noreferrer">
+          <p className="text-gray-200 text-xs">
+            <em>Request upload access: </em>
+            <a
+              href="https://discord.gg/xXrxDgQHwe"
+              className="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Discord
             </a>
           </p>

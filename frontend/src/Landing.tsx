@@ -21,7 +21,6 @@ export default function Landing() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
   return (
     <>
       <MediaUpload />
@@ -65,10 +64,11 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      <section className="bg-gradient-to-b from-njit-navy to-njit-navy-dark p-5">
-        {windowWidth >= 600 ? (
+      <section className="flex justify-center items-center bg-gradient-to-b from-njit-navy to-njit-navy-dark p-5 sm:min-h-[15vh] min-h-[50vh]">
+        <div className="hidden sm:block">
           <ClipGallery />
-        ) : (
+        </div>
+        {windowWidth < 800 && (
           <p className="text-gray-200 font-bold text-center italic">Please rotate your device or visit our site on a larger screen!</p>
         )}
       </section>
