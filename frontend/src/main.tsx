@@ -6,6 +6,7 @@ import { msalConfig } from "./authConfig";
 import App from "./App";
 import "./index.css";
 import { UserProvider } from "./contexts/roleContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const msalInstance = new PublicClientApplication(msalConfig);
 await msalInstance.initialize();
@@ -29,12 +30,23 @@ msalInstance.addEventCallback((event) => {
   }
 });
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 5 * 60, // 5min
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </MsalProvider>
+    <QueryClientProvider client={queryClient}>
+      <MsalProvider instance={msalInstance}>
+        <UserProvider>
+          <App />
+        </UserProvider>
+      </MsalProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

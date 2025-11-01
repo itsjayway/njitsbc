@@ -4,6 +4,8 @@ import validateFileExt from "../../utils/validateFileExt";
 import classes from "../../utils/classes";
 import { useUser } from "../../hooks/useUser";
 
+import placeholder from "../../assets/images/placeholder.jpg";
+
 interface ClipThumbnailProps {
   onClick: () => void;
   clip: Clip;
@@ -48,13 +50,22 @@ export default memo(function ClipThumbnail({ onClick, clip }: ClipThumbnailProps
         </div>
 
 
-        {(clipIsImage || clipIsVideo) && clip.thumbnail && (
+        {(clipIsImage || clipIsVideo) && clip.thumbnail ? (
           <img
             src={clip.thumbnail}
             className={classes(
               "object-cover rounded-2xl aspect-square w-full transition-opacity duration-300",
             )}
             alt={clip.description || "Clip thumbnail"}
+            loading="lazy"
+          />
+        ) : (
+          <img
+            src={placeholder}
+            className={classes(
+              "object-cover rounded-2xl aspect-square w-full transition-opacity duration-300",
+            )}
+            alt="Placeholder"
             loading="lazy"
           />
         )}

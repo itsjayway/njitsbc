@@ -69,6 +69,7 @@ export default function MediaUpload() {
             description,
             blobUrl,
             user: user.displayName,
+            thumbnail: null // TODO
           }),
         });
         alert("Upload successful!");

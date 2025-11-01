@@ -2,7 +2,7 @@ import React from "react";
 import classes from "../utils/classes";
 
 interface ButtonProps {
-  content: string;
+  content?: string;
   className?: string;
   disabled?: boolean;
   children?: React.ReactNode;

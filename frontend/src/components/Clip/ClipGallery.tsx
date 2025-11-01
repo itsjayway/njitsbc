@@ -1,27 +1,28 @@
 import React, { useEffect, useState, useRef, memo } from "react";
+
 import ClipThumbnail from "./ClipThumbnail";
 import ClipModal from "./ClipModal";
 import Paginator from "../Pagninator";
 import type Clip from "../../interfaces/ClipInterface";
 import LoadingSpinner from "../LoadingSpinner";
+import { useQuery } from "@tanstack/react-query";
 
 export default memo(function ClipGallery() {
-  const [clips, setClips] = useState<Clip[]>([]);
+  // const [clips, setClips] = useState<Clip[]>([]);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
   const [page, setPage] = useState(0);
   const [clipsPerPage, setClipsPerPage] = useState(4);
   const galleryRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    const fetchClips = async () => {
+  const { data: clips = [], isLoading } = useQuery<Clip[]>({
+    queryKey: ['clips'],
+    queryFn: async () => {
       const resp = await fetch("http://localhost:7071/api/listClips");
-      const data = await resp.json();
-      if (mounted) setClips(data);
-    };
-    fetchClips();
-    return () => { mounted = false; };
-  }, []);
+      if (!resp.ok) throw new Error('Failed to fetch clips');
+      return resp.json();
+    },
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+  });
 
   const startIdx = page * clipsPerPage;
   const endIdx = startIdx + clipsPerPage;
@@ -103,7 +104,7 @@ export default memo(function ClipGallery() {
           onNext={() => handlePageChange(Math.min(page + 1, totalPages - 1))}
           setPage={handlePageChange}
         >
-          {clips.length === 0 && (
+          {isLoading && (
             <div className="w-[100vw] flex justify-center items-center text-white gap-x-10">
               {[...Array(4)].map((_, i) => (
                 <LoadingSpinner key={i} />
